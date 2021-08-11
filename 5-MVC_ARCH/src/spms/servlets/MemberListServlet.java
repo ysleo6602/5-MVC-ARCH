@@ -25,11 +25,8 @@ public class MemberListServlet extends HttpServlet {
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     try {
       ServletContext sc = this.getServletContext();
-      Connection conn = (Connection)sc.getAttribute("conn");
-      
       response.setContentType("text/html; charset=UTF-8");
-      MemberDao memberDao = new MemberDao();
-      memberDao.setConnection(conn);
+      MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao");
       
       request.setAttribute("members", memberDao.selectList());
             

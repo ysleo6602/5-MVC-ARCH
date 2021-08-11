@@ -26,14 +26,11 @@ public class MemberAddServlet extends HttpServlet {
   }
   @Override
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    Connection conn = null;
     PreparedStatement stmt = null;
     
     try {
       ServletContext sc = this.getServletContext();
-      conn = (Connection)sc.getAttribute("conn");
-      MemberDao memberDao = new MemberDao();
-      memberDao.setConnection(conn);
+      MemberDao memberDao = (MemberDao)sc.getAttribute("memberDao");
       
       Member member = new Member()
           .setName(request.getParameter("name"))

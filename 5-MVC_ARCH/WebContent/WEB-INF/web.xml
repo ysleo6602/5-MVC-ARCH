@@ -19,12 +19,6 @@
   	<param-value>study</param-value>
   </context-param>
   
-  <servlet>
-  	<servlet-name>AppInitSevlet</servlet-name>
-  	<servlet-class>spms.servlets.AppInitServlet</servlet-class>
-  	<load-on-startup>1</load-on-startup>
-  </servlet>
-  
   <filter>
   	<filter-name>CharacterEncodingFilter</filter-name>
   	<filter-class>spms.filters.CharacterEncodingFilter</filter-class>
@@ -39,6 +33,11 @@
   	<filter-name>CharacterEncodingFilter</filter-name>
   	<url-pattern>/*</url-pattern>
   </filter-mapping>
+  
+  <listener>
+  	<listener-class>spms.listeners.ContextLoaderListener</listener-class>
+  </listener>
+  
   
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>
