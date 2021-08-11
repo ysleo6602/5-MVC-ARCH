@@ -2,7 +2,6 @@ package spms.servlets;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -15,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import spms.dao.MemberDao;
 import spms.vo.Member;
 
 @SuppressWarnings("serial")
@@ -23,38 +23,24 @@ public class MemberListServlet extends HttpServlet {
 
   @Override
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    Connection conn = null;
-    Statement stmt = null;
-    ResultSet rs = null;
-    
     try {
       ServletContext sc = this.getServletContext();
-      conn = (Connection)sc.getAttribute("conn");
-      stmt = conn.createStatement();
-      rs = stmt.executeQuery("select mno, mname, email, cre_date from members order by mno asc");
+      Connection conn = (Connection)sc.getAttribute("conn");
       
       response.setContentType("text/html; charset=UTF-8");
-      ArrayList<Member> members = new ArrayList<Member>();
+      MemberDao memberDao = new MemberDao();
+      memberDao.setConnection(conn);
       
-      while(rs.next()) {
-        members.add(new Member().setNo(rs.getInt("mno"))
-            .setName(rs.getString("mname"))
-            .setEmail(rs.getString("email"))
-            .setCreatedDate(rs.getDate("cre_date"))
-            );
-      }
-      
-      request.setAttribute("members", members);
+      request.setAttribute("members", memberDao.selectList());
+            
       RequestDispatcher rd = request.getRequestDispatcher("/member/MemberList.jsp");
       rd.include(request, response);
       
     } catch(Exception e) {
+      e.printStackTrace();
       request.setAttribute("error", e);;
       RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
       rd.forward(request, response);
-    } finally {
-      try { if(rs != null) rs.close();} catch(Exception e) {}
-      try { if(stmt != null) stmt.close();} catch(Exception e) {}
     }
   }
 }

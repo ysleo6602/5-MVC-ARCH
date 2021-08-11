@@ -20,14 +20,13 @@ public class MemberDao {
     ResultSet rs = null;
     try {
       stmt = conn.createStatement();
-      rs = stmt.executeQuery("seletct mno, mname, email, cre_date from members order by mno asc");
+      rs = stmt.executeQuery("select mno, mname, email, cre_date from members order by mno asc");
       ArrayList<Member> members = new ArrayList<Member>();
       while(rs.next()) {
         members.add(new Member().setNo(rs.getInt("mno"))
             .setName(rs.getString("mname"))
             .setEmail(rs.getString("email"))
-            .setCreatedDate(rs.getDate("cre_date"))
-            );      
+            .setCreatedDate(rs.getDate("cre_date")) );      
       }
         return members;
       } catch(Exception e) {    
