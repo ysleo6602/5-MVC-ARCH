@@ -8,7 +8,7 @@
 </head>
 <body>
 <div style="background-color:#00008b;color:#ffffff;height:20px;padding:5px;">
-SPMS(Simple Project Manaagement System)
+SPMS(Simple Project Management System)
 </div>
 </body>
 </html>
