@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,19 +22,18 @@ public class MemberDeleteServlet extends HttpServlet {
     PreparedStatement stmt = null;
     try {
       ServletContext sc = this.getServletContext();
-      Class.forName(sc.getInitParameter("driver"));
-      conn = DriverManager.getConnection(sc.getInitParameter("url"),
-          sc.getInitParameter("username"), sc.getInitParameter("password"));
+      conn = (Connection)sc.getAttribute("conn");
       stmt = conn.prepareStatement("delete from members where mno=?");
       stmt.setString(1, request.getParameter("no"));
       stmt.executeUpdate();
       
       response.sendRedirect("list");
     } catch (Exception e) {
-      throw new ServletException(e);
+      request.setAttribute("error", e);
+      RequestDispatcher rd = request.getRequestDispatcher("/Error.jsp");
+      rd.forward(request, response);
     } finally {
       try { if(stmt != null) stmt.close(); } catch(Exception e) {}
-      try { if(conn != null) conn.close(); } catch(Exception e) {}
     }
   }
 }

@@ -1,19 +1,21 @@
 package spms.servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import spms.vo.Member;
 
 @SuppressWarnings("serial")
 @WebServlet("/member/update")
@@ -33,23 +35,17 @@ public class MemberUpdateServlet extends HttpServlet {
           + request.getParameter("no")
           );
       rs.next();
-      
+      Member member = new Member()
+          .setNo(rs.getInt("mno"))
+          .setEmail(rs.getString("email"))
+          .setName(rs.getString("mname"))
+          .setCreatedDate(rs.getDate("cre_date"));      
+      request.setAttribute("member", member);
       response.setContentType("text/html;charset=UTF-8");
-      PrintWriter out = response.getWriter();
-      out.println("<html><head><title>회원정보</title>");
-      out.println("</head><body>");
-      out.println("<h1>회원정보</h1>");
-      out.println("<form action='update' method='post'>");
-      out.println("번호: <input type='text' name='no' value=" + request.getParameter("no") + " readonly><br>");
-      out.println("이름: <input type='text' name='name' value=" + rs.getString("mname") + "><br>");
-      out.println("이메일: <input type='text' name='email' value=" + rs.getString("email") + "><br>");
-      out.println("가입일: " + rs.getDate("cre_date") + "<br>");
-      out.println("<input type='submit' value='저장'>");
-      out.println("<input type='button' value='삭제' onclick='location.href=\"delete?no="
-          + request.getParameter("no") + "\"'>");
-      out.println("<input type='button' value='취소' onclick='location.href=\"list\"'>");
-      out.println("</form>");
-      out.println("</body></html>");
+      
+      RequestDispatcher rd = request.getRequestDispatcher("MemberUpdateForm.jsp");
+      rd.forward(request, response);
+
     } catch(Exception e) {
       throw new ServletException(e);
     } finally {
