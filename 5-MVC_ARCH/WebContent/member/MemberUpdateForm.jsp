@@ -19,7 +19,7 @@ Member member = (Member)request.getAttribute("member");
 가입일: <%=member.getCreatedDate() %><br>
 <input type='submit' value='저장'>
 <input type='button' value='삭제' onclick='location.href="delete?no=<%=member.getNo() %>"'>
-<input type='button' value='취소' onclick='location.href=\"list\"'>
+<input type='button' value='취소' onclick='location.href="list"'>
 </form>
 </body>
 </html>

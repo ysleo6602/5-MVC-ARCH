@@ -1,9 +1,7 @@
 package spms.servlets;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
 import javax.servlet.RequestDispatcher;
@@ -13,6 +11,9 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import spms.dao.MemberDao;
+import spms.vo.Member;
 
 @SuppressWarnings("serial")
 @WebServlet("/member/add")
@@ -31,12 +32,14 @@ public class MemberAddServlet extends HttpServlet {
     try {
       ServletContext sc = this.getServletContext();
       conn = (Connection)sc.getAttribute("conn");
-      stmt = conn.prepareStatement("insert into members(mname, email, pwd, cre_date, mod_date)"
-          + "values(?,?,?,now(),now())");
-      stmt.setString(1, request.getParameter("name"));
-      stmt.setString(2, request.getParameter("email"));
-      stmt.setString(3, request.getParameter("password"));
-      stmt.executeUpdate();
+      MemberDao memberDao = new MemberDao();
+      memberDao.setConnection(conn);
+      
+      Member member = new Member()
+          .setName(request.getParameter("name"))
+          .setEmail(request.getParameter("email"))
+          .setPassword(request.getParameter("password"));
+      memberDao.insert(member);
       
       // 리프래시 - 메타태그를 이용한 방법
       //response.setContentType("text/html;charset=UTF-8");
