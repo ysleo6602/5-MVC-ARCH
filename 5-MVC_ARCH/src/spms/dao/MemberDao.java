@@ -7,19 +7,27 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import spms.util.DBConnectionPool;
 import spms.vo.Member;
 
 public class MemberDao {
-  Connection conn;
+//  Connection conn;
+//  
+//  public void setConnection(Connection conn) {
+//    this.conn = conn;
+//  }
+  DBConnectionPool connPool;
   
-  public void setConnection(Connection conn) {
-    this.conn = conn;
+  public void setDbConnectionPool(DBConnectionPool connPool) {
+    this.connPool = connPool;
   }
   
   public List<Member> selectList() throws Exception {
+    Connection conn = null;
     Statement stmt = null;
     ResultSet rs = null;
     try {
+      conn = connPool.getConnection();
       stmt = conn.createStatement();
       rs = stmt.executeQuery("select mno, mname, email, cre_date from members order by mno asc");
       ArrayList<Member> members = new ArrayList<Member>();
@@ -35,12 +43,15 @@ public class MemberDao {
       } finally {
         try { if(rs != null) rs.close(); } catch(Exception e) {}
         try { if(stmt != null) stmt.close(); } catch(Exception e) {}
+        if(conn != null) connPool.returnConnection(conn);
       }
   }
   
   public int insert(Member member) throws Exception {
+    Connection conn = null;
     PreparedStatement stmt = null;
     try {
+      conn = connPool.getConnection();
       stmt = conn.prepareStatement("insert into members(mname, email, pwd, cre_date, mod_date)"
           + "values(?,?,?,now(),now())");
       stmt.setString(1, member.getName());
@@ -52,12 +63,15 @@ public class MemberDao {
       throw e;
     } finally {
       try { if(stmt != null) stmt.close(); } catch(Exception e) {}
+      if(conn != null) connPool.returnConnection(conn);
     }
   }
   
   public int delete(int no) throws Exception {
+    Connection conn = null;
     PreparedStatement stmt = null;
     try {
+      conn = connPool.getConnection();
       stmt = conn.prepareStatement("delete from members where mno=?");
       stmt.setString(1, Integer.toString(no));
       
@@ -66,13 +80,16 @@ public class MemberDao {
       throw e;
     } finally {
       try { if(stmt != null) stmt.close(); } catch(Exception e) {}
+      if(conn != null) connPool.returnConnection(conn);
     }
   }
   
   public Member selectOne(int no) throws Exception {
+    Connection conn = null;
     Statement stmt = null;
     ResultSet rs = null;
     try {
+      conn = connPool.getConnection();
       stmt = conn.createStatement();
       rs = stmt.executeQuery("select mno, email, mname, cre_date from members where mno="
           + Integer.toString(no)
@@ -88,12 +105,15 @@ public class MemberDao {
     } finally {
       try { if(rs != null) rs.close(); } catch(Exception e) {}
       try { if(stmt != null) stmt.close(); } catch(Exception e) {}
+      if(conn != null) connPool.returnConnection(conn);
     }
   }
   
   public int update(Member member) throws Exception {
+    Connection conn = null;
     PreparedStatement stmt = null;
     try {
+      conn = connPool.getConnection();
       stmt = conn.prepareStatement("update members set email=?, mname=?, mod_date=now() where mno=?");
       stmt.setString(1, member.getEmail());
       stmt.setString(2, member.getName());
@@ -104,13 +124,16 @@ public class MemberDao {
       throw e;
     } finally {
       try { if(stmt != null) stmt.close(); } catch(Exception e) {}
+      if(conn != null) connPool.returnConnection(conn);
     }
   }
   
   public Member exist(String email, String password) throws Exception {
+    Connection conn = null;
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
+      conn = connPool.getConnection();
       stmt = conn.prepareStatement("select mname, email from members where email=? and pwd=?");
       stmt.setString(1, email);
       stmt.setString(2, password);
@@ -127,6 +150,7 @@ public class MemberDao {
     } finally {
       try { if(rs != null) rs.close(); } catch(Exception e) {}
       try { if(stmt != null) stmt.close(); } catch(Exception e) {}
+      if(conn != null) connPool.returnConnection(conn);
     }
   }
 }
